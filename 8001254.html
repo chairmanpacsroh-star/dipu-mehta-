@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<!--
+FINAL DATA STORAGE MODEL
+Persistent website/user data is stored in Supabase:
+site_settings, events, gallery, videos, committee_members, notices,
+supporters, messages, diyas.
+No localStorage/sessionStorage is used for website data.
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#8d0808">
+<meta name="description" content="माँ दुर्गा पूजा समिति, रोह — कार्यक्रम, वर्चुअल दर्शन, आरती, गैलरी और भक्त सेवा">
+
+<title>माँ दुर्गा पूजा समिति, रोह</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Hind,Arial,sans-serif;background:#fff8ea;color:#3b1414}
+:root{--red:#8d0808;--dark:#2b0505;--gold:#f5bd45;--cream:#fff1c9}
+nav{position:sticky;top:0;z-index:20;background:#2b0505;color:#fff;padding:12px 16px;box-shadow:0 3px 15px #0003}.nav{max-width:1150px;margin:auto;display:flex;justify-content:space-between;align-items:center}.brand{font-size:19px;font-weight:700}.brand small{display:block;color:#ffd978;font-size:12px}.links{display:flex;gap:5px;flex-wrap:wrap;align-items:center}.links a{color:#fff;text-decoration:none;padding:7px 10px;border-radius:20px}.links a:hover{background:#8d0808}
+.hero{min-height:560px;display:grid;place-items:center;text-align:center;color:#fff;padding:55px 20px;background:radial-gradient(circle at 50% 25%,#d02c1f,#820707 48%,#250303)}.hero .icon{font-size:70px}.hero h1{font-size:clamp(40px,7vw,75px);margin:8px 0}.hero p{font-size:20px;color:#ffe6a7}.btn{display:inline-block;border:0;background:linear-gradient(135deg,#ffd86b,#e69b16);color:#401000;padding:11px 20px;border-radius:28px;font-weight:700;text-decoration:none;cursor:pointer}
+section{max-width:1150px;margin:auto;padding:65px 18px}.title{text-align:center;margin-bottom:30px}.title h2{font-size:35px;margin:5px}.title span{color:#a20a0a;font-weight:700}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card,form,.panel{background:#fff;border:1px solid #efd39c;border-radius:20px;padding:22px;box-shadow:0 10px 30px #6b160d10}.card h3{color:#8d0808}.notice{padding:16px;margin:10px 0;background:#fff0c8;border-left:5px solid #e4a624;border-radius:12px}.events{display:grid;grid-template-columns:1fr 1fr;gap:15px}.event{background:#fff;border:1px solid #efd39c;border-radius:16px;padding:18px}.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.photo{height:190px;border-radius:18px;background:linear-gradient(135deg,#8d0808,#d59a25);display:grid;place-items:center;font-size:55px;color:#ffe9a8}.arti{background:#350707;color:#ffeab1;border-radius:20px;padding:28px;text-align:center;line-height:2;font-size:20px}.contact{display:grid;grid-template-columns:1fr 1fr;gap:20px}input,textarea,select{width:100%;padding:12px;margin:6px 0;border:1px solid #dcc598;border-radius:11px;font:inherit}textarea{min-height:100px}button{font:inherit}.status{padding:8px;text-align:center}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:9px;border-bottom:1px solid #ead9b4;text-align:left}th{background:#fff0c8}.danger{background:#a90c0c;color:#fff;border:0;border-radius:18px;padding:6px 11px;cursor:pointer}.hidden{display:none!important}.adminbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.pill{background:#fff0c8;padding:6px 12px;border-radius:20px}footer{background:#250404;color:#ffe4a0;text-align:center;padding:35px}
+@media(max-width:800px){.links{display:none}.cards{grid-template-columns:1fr 1fr}.events,.gallery,.contact{grid-template-columns:1fr}.hero{min-height:500px}section{padding:45px 14px}}
+</style>
+
+<style>
+/* ===== PREMIUM DURGA PUJA LOOK ===== */
+:root{
+ --red:#8f0808;--deep:#270303;--gold:#f8c34e;--cream:#fff8e7;
+ --ink:#351010;--muted:#7b6262;--card:#ffffff;
+}
+body{
+ background:
+ radial-gradient(circle at 10% 10%,rgba(248,195,78,.10),transparent 24%),
+ radial-gradient(circle at 90% 20%,rgba(143,8,8,.08),transparent 25%),
+ linear-gradient(180deg,#fffaf0 0%,#fff 46%,#fff5df 100%);
+ color:var(--ink);
+}
+body:before{
+ content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.22;
+ background-image:radial-gradient(#c58a22 1px,transparent 1px);
+ background-size:28px 28px;
+}
+nav{
+ background:rgba(39,3,3,.90)!important;
+ backdrop-filter:blur(18px);
+ border-bottom:1px solid rgba(248,195,78,.32);
+}
+.brand{letter-spacing:.1px}
+.hero{
+ min-height:690px!important;
+ position:relative;overflow:hidden;
+ background:
+ radial-gradient(circle at 50% 22%,rgba(255,205,91,.30),transparent 18%),
+ radial-gradient(circle at 50% 55%,#b51610 0,#730606 42%,#250303 100%)!important;
+}
+.hero:before,.hero:after{
+ content:"";position:absolute;border:1px solid rgba(248,195,78,.25);
+ width:420px;height:420px;border-radius:50%;
+}
+.hero:before{left:-180px;top:100px}.hero:after{right:-180px;bottom:-140px}
+.hero>div{position:relative;z-index:2}
+.hero .icon{
+ width:125px;height:125px;margin:0 auto 16px;border-radius:50%;
+ display:grid;place-items:center;
+ background:radial-gradient(circle,#ffd66e,#b96b0d);
+ border:3px solid #ffe5a0;
+ box-shadow:0 0 0 10px rgba(248,195,78,.08),0 15px 50px #0007;
+ font-size:62px;
+}
+.hero h1{
+ font-weight:700;letter-spacing:.3px;
+ text-shadow:0 5px 30px #0009;
+}
+.hero p{max-width:650px;margin:12px auto 25px}
+.btn{
+ box-shadow:0 8px 24px rgba(82,24,0,.20);
+ transition:.2s transform,.2s box-shadow;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(82,24,0,.30)}
+section{padding-top:78px;padding-bottom:78px}
+.title span{
+ display:inline-block;padding:6px 15px;border-radius:30px;
+ background:#fff0c7;border:1px solid #efd28e;
+}
+.title h2{font-size:clamp(29px,4vw,40px);margin:10px 0 4px}
+.title p{color:var(--muted)}
+.card,.panel,form,.event{
+ border:1px solid rgba(205,153,53,.23)!important;
+ box-shadow:0 14px 40px rgba(74,20,5,.08)!important;
+ transition:transform .2s,box-shadow .2s;
+}
+.card:hover,.event:hover{transform:translateY(-3px);box-shadow:0 18px 45px rgba(74,20,5,.13)!important}
+.cards{gap:22px}
+.card{position:relative;overflow:hidden}
+.card:before{
+ content:"";position:absolute;left:0;top:0;width:100%;height:4px;
+ background:linear-gradient(90deg,#8f0808,#f8c34e,#8f0808);
+}
+.notice{box-shadow:0 8px 24px rgba(100,40,0,.06)}
+.arti{
+ background:
+ radial-gradient(circle at 50% 0,rgba(248,195,78,.18),transparent 40%),
+ linear-gradient(145deg,#3a0606,#1d0202)!important;
+ border:1px solid rgba(248,195,78,.30);
+ box-shadow:0 18px 45px rgba(40,0,0,.16);
+}
+.gallery .photo{
+ border:3px solid #fff;outline:1px solid #e7c36f;
+ box-shadow:0 12px 30px rgba(80,20,0,.12);
+ transition:.25s;
+}
+.gallery .photo:hover{transform:scale(1.025)}
+#names .arti{min-height:175px;display:flex;flex-direction:column;justify-content:center}
+#liveName{font-size:clamp(30px,6vw,48px)!important;color:#ffe4a0}
+#liveStatus{
+ margin:15px auto;
+ display:inline-block;
+ background:#b20d0d!important;color:#fff!important;
+ border:1px solid #ffb5a5;
+}
+input,textarea,select{
+ background:#fffdf8;
+ border-color:#e6d2a6!important;
+ outline:none;
+ transition:.2s;
+}
+input:focus,textarea:focus,select:focus{
+ border-color:#bd7c13!important;
+ box-shadow:0 0 0 3px rgba(248,195,78,.16);
+}
+table th{background:#fff0c8}
+footer{
+ background:
+ radial-gradient(circle at 50% 0,rgba(248,195,78,.12),transparent 35%),
+ #250404!important;
+ border-top:2px solid rgba(248,195,78,.3);
+}
+@media(max-width:800px){
+ .hero{min-height:610px!important}
+ .hero .icon{width:100px;height:100px;font-size:50px}
+ section{padding-top:55px;padding-bottom:55px}
+ .bottom{backdrop-filter:blur(12px);background:rgba(39,3,3,.94)!important}
+}
+</style>
+
+<style>
+/* ===== PREMIUM FESTIVAL FEATURES ===== */
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feature-card{background:#fff;border:1px solid #ead19a;border-radius:20px;padding:22px;box-shadow:0 12px 35px #5a160d0d}
+.feature-card h3{margin:8px 0;color:#8d0808}.feature-card p{color:#735f5f}
+.countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:760px;margin:22px auto}
+.countbox{background:#300505;color:#ffe7a0;border:1px solid #d59b32;border-radius:16px;padding:15px;text-align:center}
+.countbox b{display:block;font-size:30px}.countbox span{font-size:12px}
+.notice-strip{position:sticky;top:57px;z-index:15;background:#8d0808;color:#fff;padding:10px 16px;text-align:center;display:none}
+.notice-strip b{color:#ffd76c}
+.darshan{min-height:430px;border-radius:24px;overflow:hidden;position:relative;background:#210303 center/cover no-repeat;box-shadow:0 18px 50px #3a070733}
+.darshan-overlay{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;padding:22px;background:linear-gradient(transparent 45%,#120000bb)}
+.darshan-hint{background:#fff2c9;color:#4a1400;border-radius:30px;padding:10px 18px;font-weight:700}
+.map-box{min-height:330px;border-radius:20px;overflow:hidden;border:1px solid #e5cc96;background:#f4ead2}
+.map-box iframe{width:100%;height:330px;border:0}
+.diyaa-wall{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;min-height:130px;padding:20px;background:radial-gradient(circle,#4d0b0b,#220202);border-radius:22px}
+.diya{font-size:32px;animation:glow 1.7s infinite alternate}.diya small{display:block;color:#ffe7a0;font-size:11px;text-align:center}
+@keyframes glow{from{filter:drop-shadow(0 0 2px #ffcf5a)}to{filter:drop-shadow(0 0 13px #ff9d20)}}
+.seva-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.qr{width:190px;height:190px;object-fit:contain;border:10px solid white;border-radius:15px;box-shadow:0 8px 25px #0002}
+.timeline{display:grid;gap:12px}.timeline-item{display:flex;gap:14px;align-items:center;padding:14px;border-radius:16px;background:#fff;border:1px solid #ead5a7}
+.timeline-time{min-width:85px;font-weight:700;color:#a20a0a}
+.live-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#d00;margin-right:5px}
+.bottom-actions{position:fixed;right:18px;bottom:18px;z-index:50;display:grid;gap:9px}
+.fab{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;text-decoration:none;color:white;background:#8d0808;box-shadow:0 8px 25px #0004;font-size:21px}
+.admin-feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0}
+.toggle-row input{width:auto}
+@media(max-width:800px){
+ .feature-grid,.seva-grid,.admin-feature-grid{grid-template-columns:1fr 1fr}
+ .countdown{grid-template-columns:repeat(2,1fr)}
+ .darshan{min-height:350px}
+}
+@media(max-width:520px){
+ .feature-grid,.seva-grid,.admin-feature-grid{grid-template-columns:1fr}
+ .countbox b{font-size:25px}
+ .notice-strip{top:54px}
+}
+</style>
+
+
+<style>
+.live-card{padding:22px;overflow:hidden}
+.live-player{aspect-ratio:16/9;display:grid;place-items:center;background:radial-gradient(circle at 70% 45%,#35103f,#0d0d0f 55%,#050505);border-radius:18px;overflow:hidden;position:relative}
+.live-player iframe{width:100%;height:100%;border:0;display:block}
+.live-placeholder{text-align:center;color:#ffe7a0;padding:30px}
+.live-placeholder h3{font-size:28px;margin:8px 0}
+.live-placeholder p{color:#d9c8c8;margin:0}
+.live-icon{font-size:52px;filter:drop-shadow(0 0 12px #e11)}
+.live-actions{text-align:center;padding-top:16px}
+</style>
+
+
+<style>
+/* ===== MOBILE + LIVE UPDATE FINAL LAYER ===== */
+html{overflow-x:hidden}
+body{width:100%;overflow-x:hidden}
+img,iframe,video{max-width:100%}
+button,.btn{min-height:44px}
+input,textarea,select{font-size:16px}
+table{min-width:520px}
+.tablewrap{-webkit-overflow-scrolling:touch}
+
+@media(max-width:800px){
+  nav{padding:9px 10px}
+  .nav{gap:8px}
+  .brand{font-size:15px;line-height:1.05;max-width:185px}
+  .brand small{font-size:10px}
+  .links{display:flex!important;overflow-x:auto;flex-wrap:nowrap;gap:2px;max-width:calc(100vw - 195px);scrollbar-width:none}
+  .links::-webkit-scrollbar{display:none}
+  .links a{white-space:nowrap;font-size:12px;padding:8px 7px}
+  .hero{min-height:560px!important;padding:45px 14px}
+  .hero h1{font-size:clamp(31px,9vw,52px);line-height:1.12}
+  .hero p{font-size:16px}
+  .hero .icon{width:92px;height:92px;font-size:46px}
+  section{padding:48px 12px!important}
+  .title h2{font-size:29px}
+  .title p{font-size:14px}
+  .cards,.feature-grid,.seva-grid,.admin-feature-grid{grid-template-columns:1fr!important}
+  .events{grid-template-columns:1fr!important}
+  .gallery{grid-template-columns:1fr 1fr!important;gap:9px}
+  .gallery .photo{height:145px}
+  .contact{grid-template-columns:1fr!important}
+  .countdown{grid-template-columns:1fr 1fr!important;gap:8px}
+  .countbox{padding:12px}
+  .countbox b{font-size:25px}
+  .darshan{min-height:330px}
+  .map-box iframe{height:280px}
+  .live-card{padding:10px}
+  .live-player{min-height:210px}
+  .live-placeholder{padding:18px}
+  .live-placeholder h3{font-size:22px}
+  .timeline-item{display:block}
+  .timeline-time{min-width:0;margin-bottom:5px}
+  .bottom-actions{right:12px;bottom:12px}
+  .fab{width:46px;height:46px}
+  footer{padding:28px 15px}
+  .adminbar{align-items:flex-start}
+}
+
+@media(max-width:430px){
+  .brand{max-width:145px;font-size:13px}
+  .links{max-width:calc(100vw - 155px)}
+  .links a{font-size:11px;padding:7px 5px}
+  .hero{min-height:510px!important}
+  .hero h1{font-size:32px}
+  .gallery .photo{height:125px}
+  .countbox b{font-size:22px}
+}
+</style>
+
+
+<style>
+/* Public visitors must never see admin-only controls */
+#admin #dashboard.hidden{display:none!important}
+</style>
+
+
+<style>
+/* ===== FINAL POLISH ===== */
+.hero:after{
+  content:"";
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent 55%,rgba(20,0,0,.28));
+}
+.hero .icon,.hero h1,.hero p,.hero .btn,.hero .pill{position:relative;z-index:2}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,#e6bd60,transparent);max-width:900px;margin:auto}
+.admin-feature-grid .card{background:linear-gradient(180deg,#fff,#fffaf0)}
+.admin-feature-grid .card h3{display:flex;align-items:center;gap:6px}
+#publicNotices:empty{display:none}
+#publicNotices .notice{margin-bottom:10px}
+.notice-strip{box-shadow:0 4px 16px rgba(60,0,0,.12)}
+.live-card{border:1px solid rgba(205,153,53,.28)}
+.live-actions .btn{margin:0 5px}
+.fab{transition:transform .2s,box-shadow .2s}
+.fab:hover{transform:translateY(-3px);box-shadow:0 12px 30px #0005}
+@media(max-width:800px){
+  .hero:after{background:linear-gradient(180deg,transparent 45%,rgba(20,0,0,.38))}
+  .title{padding:0 4px}
+  .card,.panel,.feature-card{border-radius:17px}
+  .btn{width:auto;max-width:100%}
+  .admin-feature-grid .card{padding:17px}
+}
+</style>
+
+
+<style>
+.admin-diya-list{display:grid;gap:7px;max-height:260px;overflow:auto;margin-top:8px}
+.admin-diya-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fffaf0;border:1px solid #ead5a7;border-radius:10px;padding:8px 10px;font-size:13px}
+.admin-diya-row button{min-height:34px;padding:6px 10px}
+</style>
+
+</head>
+<body>
+<nav><div class="nav"><div class="brand">🔱 माँ दुर्गा पूजा समिति, रोह<small>🙏 जय माता दी</small></div><div class="links"><a href="#home">होम</a><a href="#program">कार्यक्रम</a><a href="#names">भक्तों के नाम</a><a href="#darshan">🛕 दर्शन</a><a href="#gallery">गैलरी</a><a href="#arti">आरती</a><a href="#donation">सहयोग</a><a href="#admin">Admin</a></div></div></nav>
+<div id="liveNoticeStrip" class="notice-strip">
+  📢 <b id="liveNoticeTitle">महत्वपूर्ण सूचना</b> — <span id="liveNoticeText"></span>
+</div>
+
+<div id="publicNotices" style="max-width:900px;margin:25px auto 0;padding:0 16px"></div>
+
+
+<header id="home" class="hero"><div><div id="publicLogo" class="icon">🔱</div><div>🙏 जय माता दी 🙏</div><h1 id="publicTitle">माँ दुर्गा पूजा समिति, रोह</h1><p id="publicHeroText">भक्ति • आस्था • सेवा • संस्कार</p><div id="liveStatus" class="pill" style="display:none">🔴 पूजा चल रही है</div><br><a class="btn" href="#program">📅 पूजा कार्यक्रम देखें</a></div></header>
+<div style="max-width:1100px;margin:-38px auto 0;padding:0 16px;position:relative;z-index:5">
+<div class="cards" style="grid-template-columns:repeat(4,1fr);gap:12px">
+<a class="card" href="#program" style="text-decoration:none;text-align:center;padding:18px"><div style="font-size:30px">📅</div><b>पूजा कार्यक्रम</b></a>
+<a class="card" href="#names" style="text-decoration:none;text-align:center;padding:18px"><div style="font-size:30px">🙏</div><b>भक्तों के नाम</b></a>
+<a class="card" href="#gallery" style="text-decoration:none;text-align:center;padding:18px"><div style="font-size:30px">📸</div><b>फोटो गैलरी</b></a>
+<a class="card" href="#contact" style="text-decoration:none;text-align:center;padding:18px"><div style="font-size:30px">📞</div><b>संपर्क करें</b></a>
+</div></div>
+
+<section id="program"><div class="title"><span>📅 कार्यक्रम</span><h2>पूजा एवं आयोजन</h2></div><div id="events" class="events"><div class="event">कार्यक्रम loading...</div></div></section>
+
+<section id="names"><div class="title"><span>🙏 भक्तों के नाम</span><h2>माँ के भक्त</h2><p>हर नाम 20 सेकंड तक दिखाई देगा</p></div>
+<div class="arti"><div>🙏 जय माता दी 🙏</div><strong id="liveName" style="font-size:34px">नाम loading...</strong><div>माँ दुर्गा का आशीर्वाद सभी पर बना रहे।</div></div>
+<form id="supporterForm" style="max-width:650px;margin:20px auto"><h3>🌺 अपना नाम जोड़ें</h3><input id="supporterName" required maxlength="100" placeholder="अपना नाम लिखें"><button class="btn" type="submit">नाम तुरंत Live करें</button><div id="supporterStatus" class="status"></div></form></section>
+
+<section id="gallery"><div class="title"><span>📸 गैलरी</span><h2>माँ के दर्शन</h2><p>Admin द्वारा अपडेट की गई तस्वीरें</p></div><div id="galleryGrid" class="gallery"></div></section>
+<section id="videos"><div class="title"><span>🎥 वीडियो</span><h2>पूजा के वीडियो</h2></div><div id="videosGrid" class="cards"></div></section>
+<section id="members"><div class="title"><span>👥 समिति</span><h2>समिति के सदस्य</h2><p>30 सदस्य तक</p></div><div id="membersGrid" class="cards"></div></section>
+<section id="arti"><div class="title"><span>🙏 आरती</span><h2>माँ दुर्गा आरती</h2></div><div id="publicArti" class="arti">आरती loading...</div></section>
+
+
+<section id="countdown">
+  <div class="title"><span>⏳ Countdown</span><h2 id="countdownTitle">माँ के आगमन में बाकी समय</h2><p id="countdownSub">जय माता दी 🙏</p></div>
+  <div class="countdown">
+    <div class="countbox"><b id="cdDays">0</b><span>दिन</span></div>
+    <div class="countbox"><b id="cdHours">0</b><span>घंटे</span></div>
+    <div class="countbox"><b id="cdMinutes">0</b><span>मिनट</span></div>
+    <div class="countbox"><b id="cdSeconds">0</b><span>सेकंड</span></div>
+  </div>
+</section>
+
+<section id="darshan">
+  <div class="title"><span>🛕 Virtual Darshan</span><h2>माँ दुर्गा का वर्चुअल दर्शन</h2><p>पंडाल की तस्वीर को drag / swipe करके चारों ओर देखें</p></div>
+  <div id="darshanBox" class="darshan">
+    <div class="darshan-overlay"><div class="darshan-hint">👆 Drag / Swipe करके दर्शन करें • 🔍 Zoom</div></div>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="title"><span>🪔 आज का अनुभव</span><h2>पूजा की समय-सारणी</h2></div>
+  <div id="timelineGrid" class="timeline"></div>
+</section>
+
+<section id="live">
+  <div class="title">
+    <span>🔴 Live</span>
+    <h2 id="liveHeading">Live Event</h2>
+    <p id="liveEventText">अभी कोई Live कार्यक्रम नहीं है।</p>
+  </div>
+  <div class="card live-card">
+    <div id="livePlayer" class="live-player">
+      <div class="live-placeholder">
+        <div class="live-icon">🔴</div>
+        <h3>Live कार्यक्रम</h3>
+        <p>Admin जब Live ON करेगा, यहाँ Live कार्यक्रम दिखाई देगा।</p>
+      </div>
+    </div>
+    <div id="liveActions" class="live-actions" style="display:none">
+      <a id="liveWatchBtn" class="btn" target="_blank" rel="noopener">▶️ YouTube पर Live देखें</a>
+    </div>
+  </div>
+</section>
+
+<section id="map">
+  <div class="title"><span>📍 Location</span><h2>पूजा स्थल एवं सुविधाएँ</h2><p id="mapAddress">रोह, नवादा, बिहार</p></div>
+  <div class="map-box"><iframe id="mapFrame" loading="lazy"></iframe></div>
+  <div class="feature-grid" style="margin-top:18px">
+    <div class="feature-card">🚗 <h3>Parking</h3><p id="parkingText">Parking की जानकारी जल्द उपलब्ध होगी।</p></div>
+    <div class="feature-card">🚪 <h3>Entry Gate</h3><p id="entryText">मुख्य प्रवेश द्वार</p></div>
+    <div class="feature-card">🚑 <h3>Medical Help</h3><p id="medicalText">Emergency सहायता उपलब्ध है।</p></div>
+    <div class="feature-card">🚻 <h3>अन्य सुविधाएँ</h3><p id="facilityText">पानी • Toilet • Help Desk</p></div>
+  </div>
+</section>
+
+<section id="emergency">
+  <div class="title"><span>🚨 सहायता</span><h2>Emergency & Help</h2></div>
+  <div class="feature-grid">
+    <div class="feature-card"><h3>🚑 Ambulance</h3><p id="ambulanceText">Admin से नंबर जोड़ें</p></div>
+    <div class="feature-card"><h3>🚓 Police</h3><p id="policeText">Admin से नंबर जोड़ें</p></div>
+    <div class="feature-card"><h3>🔥 Fire</h3><p id="fireText">Admin से नंबर जोड़ें</p></div>
+    <div class="feature-card"><h3>🔎 Lost & Found</h3><p id="lostText">खोया/मिला सामान Help Desk पर जमा करें।</p></div>
+  </div>
+</section>
+
+<section id="seva">
+  <div class="title"><span>🙏 Online Seva</span><h2>माँ की सेवा</h2><p>Admin इन सेवाओं की जानकारी बदल सकता है</p></div>
+  <div class="seva-grid">
+    <div class="feature-card"><h3>🌺 पुष्प सेवा</h3><p id="flowerSeva">पुष्प सेवा की जानकारी</p></div>
+    <div class="feature-card"><h3>🍚 भोग / प्रसाद</h3><p id="prasadSeva">प्रसाद सेवा की जानकारी</p></div>
+    <div class="feature-card"><h3>🪔 आरती सेवा</h3><p id="aartiSeva">आरती सेवा की जानकारी</p></div>
+  </div>
+</section>
+
+<section id="donation">
+  <div class="title"><span>💰 सहयोग</span><h2>पूजा समिति को सहयोग</h2><p id="donationText">आपका सहयोग पूजा आयोजन में उपयोग किया जाएगा।</p></div>
+  <div class="card" style="text-align:center">
+    <img id="donationQr" class="qr" alt="Donation QR" style="display:none">
+    <h3 id="upiText">UPI: Admin से जोड़ें</h3>
+    <p id="bankText">Bank details Admin से जोड़ें</p>
+  </div>
+</section>
+
+<section id="diyaSection">
+  <div class="title"><span>🪔 Digital Diya</span><h2>अपना दीप जलाएँ</h2><p>नाम लिखकर माँ के चरणों में अपना दीप अर्पित करें</p></div>
+  <form id="diyaForm" class="card" style="max-width:620px;margin:auto;text-align:center">
+    <input id="diyaName" maxlength="40" required placeholder="आपका नाम / परिवार का नाम">
+    <button class="btn">🪔 दीप जलाएँ</button>
+    <div id="diyaStatus" class="status"></div>
+  </form>
+  <div id="diyaWall" class="diyaa-wall" style="margin-top:18px"></div>
+</section>
+
+<section id="history">
+  <div class="title"><span>📜 हमारी यात्रा</span><h2>समिति का इतिहास</h2></div>
+  <div class="card"><p id="historyText">माँ दुर्गा पूजा समिति, रोह की यात्रा और पुराने आयोजनों की जानकारी Admin यहाँ से अपडेट कर सकता है।</p></div>
+</section>
+
+<section id="cultural">
+  <div class="title"><span>🎤 Cultural</span><h2>सांस्कृतिक कार्यक्रम</h2></div>
+  <div id="culturalGrid" class="feature-grid"></div>
+</section>
+
+<section id="ai">
+  <div class="title"><span>🤖 AI</span><h2>माँ दुर्गा पूजा सहायक</h2><p>पूजा कार्यक्रम, आरती, स्थान और सुविधाओं के बारे में तुरंत जानकारी पाएँ</p></div>
+  <div class="card" style="max-width:760px;margin:auto">
+    <input id="aiQuestion" placeholder="जैसे: आज आरती कितने बजे है?">
+    <button class="btn" id="aiAsk">🤖 जवाब पूछें</button>
+    <div id="aiAnswer" class="status" style="margin-top:12px">मैं वेबसाइट में उपलब्ध जानकारी के आधार पर मदद करूँगा।</div>
+  </div>
+</section>
+
+<section id="admin"><div class="title"><span>🔐 Admin</span><h2>पूरा Website Control Panel</h2><p>Website की सामग्री, फोटो, वीडियो, संपर्क और theme यहीं से बदलें</p></div>
+
+<div id="loginBox" class="panel" style="max-width:520px;margin:auto">
+<h3>Admin Login</h3>
+<input id="email" type="email" placeholder="Admin Email">
+<input id="password" type="password" placeholder="Password">
+<button class="btn" id="loginBtn">Login</button>
+<div id="loginStatus" class="status"></div>
+</div>
+
+<div id="dashboard" class="hidden">
+<div class="panel"><div class="adminbar">
+<div><b>🔐 Admin Dashboard</b> <span id="adminEmail" class="pill"></span></div>
+<button class="danger" id="logoutBtn">Logout</button>
+</div></div><div class="notice" style="margin-top:12px">🟢 <b>Live Sync:</b> Admin में बदलाव save होने के बाद connected devices पर data अपने-आप update होगा।</div>
+
+<div class="panel" style="margin-top:18px">
+<h3>⚙️ पूरी Website Settings</h3>
+<p style="color:#765">नीचे की जानकारी बदलकर Save करें। Save होते ही website पर दिखाई जाएगी।</p>
+<div class="cards" style="margin-top:15px">
+<div class="card"><h3>🏠 Home</h3>
+<input id="sTitle" placeholder="Website title">
+<input id="sTagline" placeholder="Tagline">
+<input id="sHeroText" placeholder="Hero text">
+<input id="sLogo" placeholder="Logo image URL">
+<input id="sHeroImage" placeholder="Hero background image URL">
+</div>
+<div class="card"><h3>🔴 Live Status</h3>
+<input id="sStatus" placeholder="जैसे: पूजा चल रही है">
+<select id="sStatusOn"><option value="true">Live Status ON</option><option value="false">Live Status OFF</option></select>
+<input id="sWhatsapp" placeholder="WhatsApp नंबर, जैसे 919508903619">
+<input id="sMobile" placeholder="Contact mobile">
+<input id="sMap" placeholder="Google Maps URL">
+</div>
+<div class="card"><h3>🌺 Theme</h3>
+<input id="sPrimary" placeholder="Primary color, जैसे #8d0808">
+<input id="sGold" placeholder="Gold color, जैसे #f5bd45">
+<input id="sBackground" placeholder="Background color">
+<input id="sFooter" placeholder="Footer text">
+</div>
+</div>
+<button class="btn" id="saveSettings">💾 सभी Settings Save करें</button>
+<div id="settingsStatus" class="status"></div>
+</div>
+
+<div class="panel" style="margin-top:18px">
+<h3>📢 Notice Management</h3>
+<input id="noticeTitle" placeholder="Notice title">
+<textarea id="noticeDesc" placeholder="Notice"></textarea>
+<button class="btn" id="addNotice">Notice जोड़ें</button>
+<div id="noticesList"></div>
+</div>
+
+<div class="panel" style="margin-top:18px">
+<h3>📅 पूजा कार्यक्रम Management</h3>
+<input id="eventTitle" placeholder="कार्यक्रम">
+<input id="eventDate" type="date">
+<input id="eventTime" placeholder="समय">
+<textarea id="eventDesc" placeholder="विवरण"></textarea>
+<button class="btn" id="addEvent">Event जोड़ें</button>
+<div id="eventsAdminList"></div>
+</div>
+
+<div class="panel" style="margin-top:18px">
+<h3>👥 30 समिति सदस्य Management</h3>
+<input id="memberName" placeholder="नाम">
+<input id="memberPost" placeholder="पद">
+<input id="memberMobile" placeholder="मोबाइल">
+<input id="memberPhoto" placeholder="Photo URL">
+<textarea id="memberBio" placeholder="छोटा परिचय"></textarea>
+<button class="btn" id="addMember">सदस्य जोड़ें</button>
+<div id="membersList"></div>
+</div>
+
+<div class="panel" style="margin-top:18px">
+<h3>📸 Photo Gallery Management</h3>
+<p>यहाँ फोटो का direct URL डालें। Admin फोटो बदल/हटा सकता है।</p>
+<input id="photoTitle" placeholder="फोटो का नाम">
+<input id="photoUrl" placeholder="Photo URL (https://...)">
+<button class="btn" id="addPhoto">📸 फोटो जोड़ें</button>
+<div id="galleryAdminList"></div>
+</div>
+
+<div class="panel" style="margin-top:18px">
+<h3>🎥 Video Management</h3>
+<input id="videoTitle" placeholder="Video title">
+<input id="videoUrl" placeholder="YouTube/Video URL">
+<button class="btn" id="addVideo">🎥 वीडियो जोड़ें</button>
+<div id="videosAdminList"></div>
+</div>
+
+<div class="panel" style="margin-top:18px">
+<h3>🙏 आरती Management</h3>
+<textarea id="artiText" style="min-height:180px" placeholder="आरती का पूरा पाठ"></textarea>
+<button class="btn" id="saveArti">🪔 आरती Save करें</button>
+</div>
+
+<div class="panel" style="margin-top:18px">
+<h3>🙏 भक्तों के नाम — Live / Delete</h3>
+<p>नाम submit होते ही live होंगे। Admin किसी भी नाम को हटा सकता है।</p>
+<div id="supportersList" class="tablewrap"></div>
+</div>
+
+<div class="panel" style="margin-top:18px">
+<h3>💬 भक्तों के संदेश — Delete</h3>
+<div id="messagesList" class="tablewrap"></div>
+</div>
+<div class="panel" style="margin-top:18px">
+  <h3>✨ Premium Features Control</h3>
+  <p style="color:#765">नीचे से सभी नए sections की जानकारी बदलें और ON/OFF करें।</p>
+
+  <div class="admin-feature-grid">
+    <div class="card">
+      <h3>⏳ Countdown</h3>
+      <input id="xCountdownTitle" placeholder="Countdown title">
+      <input id="xCountdownDate" type="datetime-local">
+      <input id="xCountdownSub" placeholder="Subtitle">
+      <div class="toggle-row"><span>Countdown ON</span><input id="xCountdownOn" type="checkbox"></div>
+    </div>
+
+    <div class="card">
+      <h3>🛕 360° Virtual Darshan</h3>
+      <input id="xDarshanUrl" placeholder="360° Photo URL">
+      <input id="xDarshanTitle" placeholder="Darshan title">
+      <div class="toggle-row"><span>Darshan ON</span><input id="xDarshanOn" type="checkbox"></div>
+    </div>
+
+    <div class="card">
+      <h3>📢 Live Notice</h3>
+      <input id="xNoticeTitle" placeholder="Notice title">
+      <input id="xNoticeText" placeholder="Notice text">
+      <div class="toggle-row"><span>Notice ON</span><input id="xNoticeOn" type="checkbox"></div>
+    </div>
+
+    <div class="card">
+      <h3>🔴 Live Event</h3>
+      <input id="xLiveText" placeholder="Live event title, जैसे: महाआरती Live">
+      <input id="xLiveUrl" placeholder="YouTube Live URL"><p style="font-size:13px;color:#765;margin-top:8px">💡 YouTube Live को embed करने के लिए website को hosting/HTTPS पर खोलें। Local <code>file://</code> में YouTube कभी-कभी Error 153 दिखा सकता है; नीचे का YouTube button फिर भी काम करेगा।</p>
+      <div class="toggle-row"><span>Live ON</span><input id="xLiveOn" type="checkbox"></div>
+    </div>
+
+    <div class="card">
+      <h3>🗺️ Location & Facilities</h3>
+      <input id="xMapUrl" placeholder="Google Maps Embed URL">
+      <input id="xAddress" placeholder="पूजा स्थल">
+      <input id="xParking" placeholder="Parking">
+      <input id="xEntry" placeholder="Entry Gate">
+      <input id="xMedical" placeholder="Medical Help">
+      <input id="xFacilities" placeholder="अन्य सुविधाएँ">
+    </div>
+
+    <div class="card">
+      <h3>🚨 Emergency</h3>
+      <input id="xAmbulance" placeholder="Ambulance">
+      <input id="xPolice" placeholder="Police">
+      <input id="xFire" placeholder="Fire">
+      <textarea id="xLost" placeholder="Lost & Found सूचना"></textarea>
+    </div>
+
+    <div class="card">
+      <h3>🙏 Online Seva</h3>
+      <textarea id="xFlower" placeholder="पुष्प सेवा"></textarea>
+      <textarea id="xPrasad" placeholder="प्रसाद सेवा"></textarea>
+      <textarea id="xAartiSeva" placeholder="आरती सेवा"></textarea>
+    </div>
+
+    <div class="card">
+      <h3>💰 Donation</h3>
+      <textarea id="xDonationText" placeholder="Donation description"></textarea>
+      <input id="xUpi" placeholder="UPI ID">
+      <textarea id="xBank" placeholder="Bank details"></textarea>
+      <input id="xQr" placeholder="QR image URL">
+    </div>
+
+    <div class="card">
+      <h3>📜 History</h3>
+      <textarea id="xHistory" style="min-height:150px" placeholder="समिति का इतिहास"></textarea>
+    </div>
+
+    <div class="card">
+      <h3>🎤 Cultural Program</h3>
+      <textarea id="xCultural" style="min-height:150px" placeholder="एक line में: समय | कार्यक्रम | विवरण"></textarea>
+    </div>
+
+    <div class="card">
+      <h3>🪔 Digital Diya</h3>
+      <div class="toggle-row"><span>Digital Diya ON</span><input id="xDiyaOn" type="checkbox"></div>
+      <input id="xDiyaLimit" type="number" min="20" max="5000" placeholder="Maximum visible diyas">
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid #ead5a7">
+        <button type="button" class="danger" id="clearAllDiyas">🗑️ सभी Digital Diya Delete करें</button>
+        <p style="font-size:12px;color:#765;margin:7px 0 0">
+          सभी भक्तों के Digital Diya names Supabase में save होंगे और सभी mobile में दिखेंगे।
+        </p>
+      </div>
+      <div id="adminDiyaList" style="margin-top:12px"></div><div id="diyaAdminStatus" class="status"></div>
+
+    </div>
+  </div>
+
+  <button class="btn" id="savePremium">💾 Premium Features Save करें</button>
+  <div id="premiumStatus" class="status"></div>
+</div>
+</div></section>
+
+
+
+
+
+
+</div>
+</section>
+
+<section id="contact"><div class="title"><span>📍 संपर्क</span><h2>पूजा स्थल</h2><p>रोह, नवादा, बिहार</p></div><div class="contact"><div class="card" style="text-align:center;font-size:22px">📍<br><b>माँ दुर्गा पूजा स्थल</b><br><small>रोह, नवादा, बिहार</small><br><br><a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Roh%2C%20Nawada%2C%20Bihar">Google Maps</a></div><form id="messageForm"><h3>💬 भक्तों का संदेश</h3><input id="messageName" required placeholder="आपका नाम"><textarea id="messageText" required maxlength="1000" placeholder="आपका संदेश"></textarea><button class="btn">संदेश भेजें</button><div id="messageStatus" class="status"></div></form></div></section>
+
+
+<div id="syncStatus" style="position:fixed;left:12px;bottom:12px;z-index:60;display:none;background:#fff8df;border:1px solid #e2bd62;color:#5b2200;border-radius:20px;padding:7px 12px;font-size:12px;box-shadow:0 5px 20px #0002">
+  🟢 Live Update
+</div>
+
+<div class="bottom-actions">
+  <a id="waFab" class="fab" href="#" target="_blank" title="WhatsApp">💬</a>
+  <a class="fab" href="#darshan" title="Virtual Darshan">🛕</a>
+  <a class="fab" href="#donation" title="सहयोग">🙏</a>
+</div>
+
+<footer>🔱 🌺 🪔 🌺 🔱<h2>माँ दुर्गा पूजा समिति, रोह</h2><p>© 2026</p></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://mgleamnzydsnciozrfye.supabase.co";
+const SUPABASE_KEY="sb_publishable_KLlyn4-eX-WXkvUOougPJA_OPahlLcR";
+const ADMIN_USER_ID="e245cbdb-a8c8-4c7b-8a57-f58253797268";
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let supporters=[], supporterIndex=0;
+
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const $=id=>document.getElementById(id);
+
+async function isAdmin(){
+ const {data:{user}}=await db.auth.getUser();
+ return user && user.id===ADMIN_USER_ID;
+}
+async function loadSettings(){
+ const {data}=await db.from("site_settings").select("*").eq("id",1).maybeSingle();
+ const s=data?.data||{};
+ if(s.title) $("publicTitle").textContent=s.title;
+ if(s.hero_text) $("publicHeroText").textContent=s.hero_text;
+ if(s.logo_url) $("publicLogo").innerHTML=`<img src="${esc(s.logo_url)}" style="width:90px;height:90px;object-fit:contain;border-radius:50%">`;
+ if(s.hero_image) document.querySelector(".hero").style.backgroundImage=`linear-gradient(#5b0000aa,#250303dd),url("${s.hero_image}")`;
+ if(s.status_on) { $("liveStatus").style.display="inline-block"; $("liveStatus").textContent="🔴 "+(s.status||"पूजा चल रही है"); }
+ else $("liveStatus").style.display="none";
+ if(s.primary) document.documentElement.style.setProperty("--red",s.primary);
+ if(s.gold) document.documentElement.style.setProperty("--gold",s.gold);
+ if(s.background) document.body.style.background=s.background;
+ if(s.footer) document.querySelector("footer p").textContent=s.footer;
+ if(s.arti) $("publicArti").innerHTML=esc(s.arti).replace(/\n/g,"<br>");
+ $("sTitle").value=s.title||"";
+ $("sTagline").value=s.tagline||"";
+ $("sHeroText").value=s.hero_text||"";
+ $("sLogo").value=s.logo_url||"";
+ $("sHeroImage").value=s.hero_image||"";
+ $("sStatus").value=s.status||"";
+ $("sStatusOn").value=String(s.status_on!==false);
+ $("sWhatsapp").value=s.whatsapp||"";
+ $("sMobile").value=s.mobile||"";
+ $("sMap").value=s.map_url||"";
+ $("sPrimary").value=s.primary||"";
+ $("sGold").value=s.gold||"";
+ $("sBackground").value=s.background||"";
+ $("sFooter").value=s.footer||"";
+ $("artiText").value=s.arti||"";
+}
+async function loadPublic(){
+ await loadSettings();
+ const [ev,ga,su,vid,mem,no]=await Promise.all([
+  db.from("events").select("*").order("event_date",{ascending:true}),
+  db.from("gallery").select("*").order("created_at",{ascending:false}),
+  db.from("supporters").select("id,name,created_at").order("created_at",{ascending:true}).limit(10000),
+  db.from("videos").select("*").order("created_at",{ascending:false}),
+  db.from("committee_members").select("*").order("id").limit(30),
+  db.from("notices").select("*").order("id",{ascending:false})
+ ]);
+ $("events").innerHTML=ev.data?.length?ev.data.map(x=>`<div class="event"><h3>📅 ${esc(x.title)}</h3><b>${esc(x.event_date||"")} ${esc(x.event_time||"")}</b><p>${esc(x.description||"")}</p></div>`).join(""):"<div class='event'>अभी कोई कार्यक्रम नहीं जोड़ा गया।</div>";
+ $("galleryGrid").innerHTML=ga.data?.length?ga.data.map(x=>`<div class="photo" style="background-image:url('${esc(x.image_url)}');background-size:cover;background-position:center" title="${esc(x.title||"")}"></div>`).join(""):"<div class='photo'>🌺</div><div class='photo'>🪔</div><div class='photo'>🙏</div>";
+ $("videosGrid").innerHTML=vid.data?.length?vid.data.map(x=>`<div class="card"><h3>🎥 ${esc(x.title)}</h3><a class="btn" target="_blank" href="${esc(x.video_url)}">वीडियो देखें</a></div>`).join(""):"<div class='card'>अभी कोई वीडियो नहीं।</div>";
+ $("membersGrid").innerHTML=mem.data?.length?mem.data.map(x=>`<div class="card">${x.photo_url?`<img src="${esc(x.photo_url)}" style="width:90px;height:90px;object-fit:cover;border-radius:50%">`:"<div class='icon'>👤</div>"}<h3>${esc(x.name)}</h3><p>${esc(x.post||"")}</p><small>${esc(x.bio||"")}</small></div>`).join(""):"<div class='card'>समिति सदस्य जल्द जोड़े जाएंगे।</div>";
+ supporters=su.data||[]; showName(); const nd=no.data||[]; const pn=$("publicNotices"); pn.innerHTML=nd.length?nd.slice(0,5).map(x=>`<div class="notice"><b>📢 ${esc(x.title)}</b><br>${esc(x.description||"")}</div>`).join(""):"";
+}
+function showName(){ $("liveName").textContent=supporters.length?supporters[supporterIndex%supporters.length].name:"जय माता दी"; if(supporters.length)supporterIndex++; }
+setInterval(showName,20000);
+
+$("supporterForm").addEventListener("submit",async e=>{e.preventDefault();const name=$("supporterName").value.trim();if(!name)return;const {data,error}=await db.from("supporters").insert({name}).select().single();$("supporterStatus").textContent=error?"नाम save नहीं हुआ: "+error.message:"🙏 नाम तुरंत Live हो गया।";if(data){supporters.push(data);supporterIndex=supporters.length-1;showName();e.target.reset();}});
+$("messageForm").addEventListener("submit",async e=>{e.preventDefault();const {error}=await db.from("messages").insert({name:$("messageName").value.trim(),message:$("messageText").value.trim()});$("messageStatus").textContent=error?"संदेश नहीं भेजा गया: "+error.message:"🙏 संदेश भेज दिया गया।";if(!error)e.target.reset();});
+
+$("loginBtn").addEventListener("click",async()=>{ $("loginStatus").textContent="Login हो रहा है..."; const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value}); if(error){$("loginStatus").textContent="Login असफल: "+error.message;return} await checkAdmin();});
+$("logoutBtn").addEventListener("click",async()=>{await db.auth.signOut();document.body.classList.remove("admin-authenticated");$("dashboard").classList.add("hidden");$("loginBox").classList.remove("hidden")});
+
+async function checkAdmin(){const {data:{user}}=await db.auth.getUser();if(!user)return;if(user.id!==ADMIN_USER_ID){$("loginStatus").textContent="यह account Admin नहीं है।";await db.auth.signOut();return}$("loginBox").classList.add("hidden");$("dashboard").classList.remove("hidden");document.body.classList.add("admin-authenticated");$("adminEmail").textContent=user.email;await loadAdmin();}
+async function loadAdmin(){await loadMembers();await loadNotices();await loadEventsAdmin();await loadGalleryAdmin();await loadVideosAdmin();await loadSupporters();await loadMessages();await loadSettings();}
+
+$("saveSettings").addEventListener("click",async()=>{
+ const data={title:$("sTitle").value.trim(),tagline:$("sTagline").value.trim(),hero_text:$("sHeroText").value.trim(),logo_url:$("sLogo").value.trim(),hero_image:$("sHeroImage").value.trim(),status:$("sStatus").value.trim(),status_on:$("sStatusOn").value==="true",whatsapp:$("sWhatsapp").value.trim(),mobile:$("sMobile").value.trim(),map_url:$("sMap").value.trim(),primary:$("sPrimary").value.trim(),gold:$("sGold").value.trim(),background:$("sBackground").value.trim(),footer:$("sFooter").value.trim(),arti:$("artiText").value};
+ const {error}=await db.from("site_settings").upsert({id:1,data});$("settingsStatus").textContent=error?error.message:"✅ Settings save हो गईं।";if(!error)loadSettings();
+});
+$("saveArti").addEventListener("click",async()=>{$("sStatus").value=$("sStatus").value;await $("saveSettings").click()});
+
+$("addMember").addEventListener("click",async()=>{const {error}=await db.from("committee_members").insert({name:$("memberName").value.trim(),post:$("memberPost").value.trim(),mobile:$("memberMobile").value.trim(),photo_url:$("memberPhoto").value.trim(),bio:$("memberBio").value.trim()});if(error)alert(error.message);else{["memberName","memberPost","memberMobile","memberPhoto","memberBio"].forEach(x=>$(x).value="");loadMembers();loadPublic();}});
+$("addNotice").addEventListener("click",async()=>{const {error}=await db.from("notices").insert({title:$("noticeTitle").value.trim(),description:$("noticeDesc").value.trim()});if(error)alert(error.message);else{["noticeTitle","noticeDesc"].forEach(x=>$(x).value="");loadNotices();}});
+$("addEvent").addEventListener("click",async()=>{const {error}=await db.from("events").insert({title:$("eventTitle").value.trim(),event_date:$("eventDate").value||null,event_time:$("eventTime").value.trim(),description:$("eventDesc").value.trim()});if(error)alert(error.message);else{["eventTitle","eventDate","eventTime","eventDesc"].forEach(x=>$(x).value="");loadEventsAdmin();loadPublic();buildTimeline();}});
+$("addPhoto").addEventListener("click",async()=>{const {error}=await db.from("gallery").insert({title:$("photoTitle").value.trim(),image_url:$("photoUrl").value.trim()});if(error)alert(error.message);else{["photoTitle","photoUrl"].forEach(x=>$(x).value="");loadGalleryAdmin();loadPublic();}});
+$("addVideo").addEventListener("click",async()=>{const {error}=await db.from("videos").insert({title:$("videoTitle").value.trim(),video_url:$("videoUrl").value.trim()});if(error)alert(error.message);else{["videoTitle","videoUrl"].forEach(x=>$(x).value="");loadVideosAdmin();loadPublic();}});
+
+async function del(table,id,fn){if(!confirm("हटाएँ?"))return;const {error}=await db.from(table).delete().eq("id",id);if(error)alert(error.message);else fn();}
+async function loadMembers(){const {data}=await db.from("committee_members").select("*").order("id");$("membersList").innerHTML=(data||[]).map(x=>`<div style="margin:8px 0"><b>${esc(x.name)}</b> — ${esc(x.post||"")} <button class="danger" onclick="del('committee_members',${x.id},loadMembers)">हटाएँ</button></div>`).join("")||"कोई सदस्य नहीं";}
+async function loadNotices(){const {data}=await db.from("notices").select("*").order("id",{ascending:false});$("noticesList").innerHTML=(data||[]).map(x=>`<div style="margin:8px 0"><b>${esc(x.title)}</b> — ${esc(x.description||"")} <button class="danger" onclick="del('notices',${x.id},loadNotices)">हटाएँ</button></div>`).join("")||"कोई notice नहीं";}
+async function loadEventsAdmin(){const {data}=await db.from("events").select("*").order("event_date");$("eventsAdminList").innerHTML=(data||[]).map(x=>`<div style="margin:8px 0"><b>${esc(x.title)}</b> ${esc(x.event_date||"")} <button class="danger" onclick="del('events',${x.id},loadEventsAdmin)">हटाएँ</button></div>`).join("")||"कोई event नहीं";}
+async function loadGalleryAdmin(){const {data}=await db.from("gallery").select("*").order("created_at",{ascending:false});$("galleryAdminList").innerHTML=(data||[]).map(x=>`<div style="margin:8px 0"><b>${esc(x.title||"Photo")}</b> <a target="_blank" href="${esc(x.image_url)}">देखें</a> <button class="danger" onclick="del('gallery',${x.id},loadGalleryAdmin)">हटाएँ</button></div>`).join("")||"कोई photo नहीं";}
+async function loadVideosAdmin(){const {data}=await db.from("videos").select("*").order("created_at",{ascending:false});$("videosAdminList").innerHTML=(data||[]).map(x=>`<div style="margin:8px 0"><b>${esc(x.title)}</b> <a target="_blank" href="${esc(x.video_url)}">देखें</a> <button class="danger" onclick="del('videos',${x.id},loadVideosAdmin)">हटाएँ</button></div>`).join("")||"कोई video नहीं";}
+async function loadSupporters(){const {data}=await db.from("supporters").select("*").order("created_at",{ascending:false}).limit(10000);supporters=data||[];$("supportersList").innerHTML="<table><tr><th>नाम</th><th>समय</th><th></th></tr>"+supporters.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.created_at)}</td><td><button class="danger" onclick="del('supporters',${x.id},loadSupporters)">हटाएँ</button></td></tr>`).join("")+"</table>";}
+async function loadMessages(){const {data}=await db.from("messages").select("*").order("created_at",{ascending:false});$("messagesList").innerHTML="<table><tr><th>नाम</th><th>संदेश</th><th></th></tr>"+(data||[]).map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.message)}</td><td><button class="danger" onclick="del('messages',${x.id},loadMessages)">हटाएँ</button></td></tr>`).join("")+"</table>";}
+
+(async()=>{await loadPublic();const {data:{user}}=await db.auth.getUser();if(user)checkAdmin()})();
+
+/* ===== PREMIUM FEATURE ENGINE ===== */
+const DEFAULT_PREMIUM = {
+  countdown:{on:false,title:"माँ के आगमन में बाकी समय",date:"",sub:"जय माता दी 🙏"},
+  darshan:{on:false,url:"",title:"माँ दुर्गा का वर्चुअल दर्शन"},
+  notice:{on:false,title:"महत्वपूर्ण सूचना",text:""},
+  live:{on:false,text:"",url:""},
+  map:{url:"https://www.google.com/maps?q=Roh%2C%20Nawada%2C%20Bihar&output=embed",address:"रोह, नवादा, बिहार",parking:"Parking की जानकारी जल्द उपलब्ध होगी।",entry:"मुख्य प्रवेश द्वार",medical:"Emergency सहायता उपलब्ध है।",facilities:"पानी • Toilet • Help Desk"},
+  emergency:{ambulance:"",police:"",fire:"",lost:"खोया/मिला सामान Help Desk पर जमा करें।"},
+  seva:{flower:"पुष्प सेवा की जानकारी",prasad:"प्रसाद सेवा की जानकारी",aarti:"आरती सेवा की जानकारी"},
+  donation:{text:"आपका सहयोग पूजा आयोजन में उपयोग किया जाएगा।",upi:"",bank:"",qr:""},
+  history:"माँ दुर्गा पूजा समिति, रोह की यात्रा और पुराने आयोजनों की जानकारी।",
+  cultural:[],
+  diya:{on:true,limit:500}
+};
+let premiumData = JSON.parse(JSON.stringify(DEFAULT_PREMIUM));
+let countdownTimer = null;
+
+function deepMerge(base, incoming){
+  if(!incoming || typeof incoming!=="object") return base;
+  Object.keys(incoming).forEach(k=>{
+    if(incoming[k] && typeof incoming[k]==="object" && !Array.isArray(incoming[k]) && base[k] && typeof base[k]==="object") deepMerge(base[k],incoming[k]);
+    else base[k]=incoming[k];
+  });
+  return base;
+}
+
+function applyPremium(s){
+  premiumData = deepMerge(JSON.parse(JSON.stringify(DEFAULT_PREMIUM)), s || {});
+  const p=premiumData;
+
+  $("countdown").style.display=p.countdown.on?"block":"none";
+  $("countdownTitle").textContent=p.countdown.title||"माँ के आगमन में बाकी समय";
+  $("countdownSub").textContent=p.countdown.sub||"जय माता दी 🙏";
+  startCountdown(p.countdown.date);
+
+  $("darshan").style.display=p.darshan.on?"block":"none";
+  $("darshanBox").style.backgroundImage=p.darshan.url ? `url("${p.darshan.url}")` : "";
+  $("darshanBox").setAttribute("title",p.darshan.title||"Virtual Darshan");
+
+  $("liveNoticeStrip").style.display=p.notice.on && p.notice.text ? "block":"none";
+  $("liveNoticeTitle").textContent=p.notice.title||"महत्वपूर्ण सूचना";
+  $("liveNoticeText").textContent=p.notice.text||"";
+
+  $("live").style.display=p.live.on?"block":"none";
+  $("liveEventText").textContent=p.live.text||"अभी कोई Live कार्यक्रम नहीं है।";
+  const lu=(p.live.url||"").trim();
+  const ytId=getYouTubeId(lu);
+  const embed=toEmbed(lu);
+  if(p.live.on && lu){
+    $("livePlayer").innerHTML = ytId
+      ? `<iframe src="${esc(embed)}" title="माँ दुर्गा पूजा समिति Live" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+      : `<div class="live-placeholder"><div class="live-icon">🔴</div><h3>Live Stream</h3><p>Live stream link उपलब्ध है। नीचे से खोलें।</p></div>`;
+    $("liveActions").style.display="block";
+    $("liveWatchBtn").href=lu;
+  } else {
+    $("livePlayer").innerHTML=`<div class="live-placeholder"><div class="live-icon">🔴</div><h3>Live कार्यक्रम</h3><p>Admin जब Live ON करेगा, यहाँ Live कार्यक्रम दिखाई देगा।</p></div>`;
+    $("liveActions").style.display="none";
+    $("liveWatchBtn").removeAttribute("href");
+  }
+
+  $("mapAddress").textContent=p.map.address||"";
+  $("parkingText").textContent=p.map.parking||"";
+  $("entryText").textContent=p.map.entry||"";
+  $("medicalText").textContent=p.map.medical||"";
+  $("facilityText").textContent=p.map.facilities||"";
+  if(p.map.url) $("mapFrame").src=p.map.url;
+
+  $("ambulanceText").textContent=p.emergency.ambulance||"Admin से नंबर जोड़ें";
+  $("policeText").textContent=p.emergency.police||"Admin से नंबर जोड़ें";
+  $("fireText").textContent=p.emergency.fire||"Admin से नंबर जोड़ें";
+  $("lostText").textContent=p.emergency.lost||"";
+
+  $("flowerSeva").textContent=p.seva.flower||"";
+  $("prasadSeva").textContent=p.seva.prasad||"";
+  $("aartiSeva").textContent=p.seva.aarti||"";
+
+  $("donationText").textContent=p.donation.text||"";
+  $("upiText").textContent=p.donation.upi ? "UPI: "+p.donation.upi : "UPI: Admin से जोड़ें";
+  $("bankText").textContent=p.donation.bank||"Bank details Admin से जोड़ें";
+  if(p.donation.qr){$("donationQr").src=p.donation.qr;$("donationQr").style.display="inline-block"}else $("donationQr").style.display="none";
+
+  $("historyText").textContent=p.history||"";
+  renderCultural(p.cultural||[]);
+  $("diyaSection").style.display=p.diya.on?"block":"none";
+  loadDiyas();
+  const wa=$("waFab");
+  if(window.__whatsappNumber) wa.href="https://wa.me/"+String(window.__whatsappNumber).replace(/\D/g,"");
+}
+
+function startCountdown(date){
+  if(countdownTimer) clearInterval(countdownTimer);
+  if(!date){["cdDays","cdHours","cdMinutes","cdSeconds"].forEach(id=>$(id).textContent="0");return;}
+  const tick=()=>{
+    const diff=new Date(date).getTime()-Date.now();
+    if(diff<=0){$("cdDays").textContent="0";$("cdHours").textContent="0";$("cdMinutes").textContent="0";$("cdSeconds").textContent="0";return;}
+    $("cdDays").textContent=Math.floor(diff/86400000);
+    $("cdHours").textContent=Math.floor(diff%86400000/3600000);
+    $("cdMinutes").textContent=Math.floor(diff%3600000/60000);
+    $("cdSeconds").textContent=Math.floor(diff%60000/1000);
+  };
+  tick(); countdownTimer=setInterval(tick,1000);
+}
+
+function getYouTubeId(url){
+  try{
+    const u=new URL(url);
+    if(u.hostname.includes("youtube.com")){
+      if(u.pathname==="/watch") return u.searchParams.get("v") || "";
+      if(u.pathname.startsWith("/live/")) return u.pathname.split("/")[2] || "";
+      if(u.pathname.startsWith("/embed/")) return u.pathname.split("/")[2] || "";
+      if(u.pathname.startsWith("/shorts/")) return u.pathname.split("/")[2] || "";
+    }
+    if(u.hostname==="youtu.be") return u.pathname.slice(1).split("/")[0] || "";
+  }catch(e){}
+  return "";
+}
+
+function toEmbed(url){
+  const id=getYouTubeId(url);
+  return id ? "https://www.youtube-nocookie.com/embed/"+encodeURIComponent(id)+"?rel=0" : "";
+}
+
+function renderCultural(items){
+  const arr=Array.isArray(items)?items:[];
+  $("culturalGrid").innerHTML=arr.length ? arr.map(x=>{
+    const a=String(x).split("|");
+    return `<div class="feature-card"><h3>🎤 ${esc(a[0]||"कार्यक्रम")}</h3><p>${esc(a[1]||"")}</p><small>${esc(a[2]||"")}</small></div>`;
+  }).join("") : "<div class='feature-card'>सांस्कृतिक कार्यक्रम Admin द्वारा जोड़े जाएंगे।</div>";
+}
+
+let diyaRows = [];
+let diyaLoadInProgress = false;
+
+async function loadDiyas(){
+  if(diyaLoadInProgress)return;
+  diyaLoadInProgress=true;
+  try{
+    const {data,error}=await db.from("diyas").select("id,name,created_at").order("created_at",{ascending:false}).limit(5000);
+    if(error){
+      console.warn("Digital Diya Supabase error:",error.message);
+      diyaRows=[];
+      renderDiyas();
+      renderAdminDiyas();
+      return;
+    }
+    diyaRows=data||[];
+    renderDiyas();
+    renderAdminDiyas();
+  }finally{
+    diyaLoadInProgress=false;
+  }
+}
+
+function renderDiyas(){
+  const limit=Number(premiumData?.diya?.limit||500);
+  const rows=diyaRows.slice(0,limit);
+  $("diyaWall").innerHTML=rows.length
+    ? rows.map(x=>`<div class="diya">🪔<small>${esc(x.name)}</small></div>`).join("")
+    : "<div style='color:#ffe7a0'>पहला दीप आप जलाएँ 🙏</div>";
+}
+
+function renderAdminDiyas(){
+  const box=$("adminDiyaList");
+  if(!box)return;
+  if(!diyaRows.length){
+    box.innerHTML="<div style='font-size:13px;color:#765'>अभी कोई Digital Diya saved नहीं है।</div>";
+    return;
+  }
+  box.innerHTML=`<div style="font-weight:700;margin-bottom:6px">Saved Diya Names (${diyaRows.length})</div>
+  <div class="admin-diya-list">${
+    diyaRows.map(x=>`<div class="admin-diya-row">
+      <span>🪔 ${esc(x.name)}</span>
+      <button type="button" class="danger diya-delete-btn" data-id="${esc(x.id)}">Delete</button>
+    </div>`).join("")
+  }</div>`;
+  box.querySelectorAll(".diya-delete-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>deleteDiya(btn.dataset.id));
+  });
+}
+
+async function deleteDiya(id){
+  if(!confirm("क्या यह Digital Diya delete करना है?"))return;
+  const {error}=await db.from("diyas").delete().eq("id",id);
+  if(error){alert("Delete नहीं हुआ: "+error.message);return;}
+  await loadDiyas();
+}
+
+if($("clearAllDiyas")){
+  $("clearAllDiyas").addEventListener("click",async()=>{
+    if(!confirm("क्या सभी Digital Diya names delete करने हैं?"))return;
+    const {error}=await db.from("diyas").delete().not("id","is",null);
+    if(error){alert("Delete नहीं हुआ: "+error.message);return;}
+    await loadDiyas();
+  });
+}
+
+$("diyaForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const n=$("diyaName").value.trim();
+  if(!n)return;
+  const btn=e.submitter||e.target.querySelector("button");
+  if(btn)btn.disabled=true;
+  $("diyaStatus").textContent="🪔 दीप save हो रहा है...";
+  const {error}=await db.from("diyas").insert({name:n});
+  if(error){
+    $("diyaStatus").textContent="❌ दीप save नहीं हुआ: "+error.message;
+  }else{
+    $("diyaStatus").textContent="🪔 आपका दीप सभी devices पर दिखाई देगा। जय माता दी!";
+    $("diyaName").value="";
+    await loadDiyas();
+  }
+  if(btn)btn.disabled=false;
+});
+
+$("aiAsk").addEventListener("click",()=>{
+  const q=$("aiQuestion").value.trim().toLowerCase();
+  let ans="🙏 कृपया कार्यक्रम, आरती, स्थान, दर्शन, सहयोग या समिति से जुड़ा सवाल पूछें।";
+  if(q.includes("आरती")||q.includes("aarti")) ans="🪔 आरती की जानकारी: "+(premiumData.seva.aarti||"Admin ने अभी समय नहीं जोड़ा है।");
+  else if(q.includes("कहाँ")||q.includes("स्थान")||q.includes("location")||q.includes("पंडाल")) ans="📍 पूजा स्थल: "+(premiumData.map.address||"रोह, नवादा, बिहार");
+  else if(q.includes("parking")) ans="🚗 Parking: "+(premiumData.map.parking||"जानकारी उपलब्ध नहीं है।");
+  else if(q.includes("प्रसाद")) ans="🍚 प्रसाद: "+(premiumData.seva.prasad||"जानकारी उपलब्ध नहीं है।");
+  else if(q.includes("कार्यक्रम")||q.includes("program")) ans="📅 कार्यक्रम section में सभी आयोजन दिखाए गए हैं।";
+  else if(q.includes("दान")||q.includes("सहयोग")||q.includes("upi")) ans="🙏 सहयोग: "+(premiumData.donation.upi||"Admin ने अभी UPI नहीं जोड़ा है।");
+  $("aiAnswer").textContent=ans;
+});
+
+function fillPremiumAdmin(){
+  const p=premiumData;
+  $("xCountdownOn").checked=!!p.countdown.on; $("xCountdownTitle").value=p.countdown.title||""; $("xCountdownDate").value=p.countdown.date||""; $("xCountdownSub").value=p.countdown.sub||"";
+  $("xDarshanOn").checked=!!p.darshan.on; $("xDarshanUrl").value=p.darshan.url||""; $("xDarshanTitle").value=p.darshan.title||"";
+  $("xNoticeOn").checked=!!p.notice.on; $("xNoticeTitle").value=p.notice.title||""; $("xNoticeText").value=p.notice.text||"";
+  $("xLiveOn").checked=!!p.live.on; $("xLiveText").value=p.live.text||""; $("xLiveUrl").value=p.live.url||"";
+  $("xMapUrl").value=p.map.url||""; $("xAddress").value=p.map.address||""; $("xParking").value=p.map.parking||""; $("xEntry").value=p.map.entry||""; $("xMedical").value=p.map.medical||""; $("xFacilities").value=p.map.facilities||"";
+  $("xAmbulance").value=p.emergency.ambulance||""; $("xPolice").value=p.emergency.police||""; $("xFire").value=p.emergency.fire||""; $("xLost").value=p.emergency.lost||"";
+  $("xFlower").value=p.seva.flower||""; $("xPrasad").value=p.seva.prasad||""; $("xAartiSeva").value=p.seva.aarti||"";
+  $("xDonationText").value=p.donation.text||""; $("xUpi").value=p.donation.upi||""; $("xBank").value=p.donation.bank||""; $("xQr").value=p.donation.qr||"";
+  $("xHistory").value=p.history||""; $("xCultural").value=(p.cultural||[]).join("\n");
+  $("xDiyaOn").checked=!!p.diya.on; $("xDiyaLimit").value=p.diya.limit||500;
+}
+
+$("savePremium").addEventListener("click",async()=>{
+  const p={
+    countdown:{on:$("xCountdownOn").checked,title:$("xCountdownTitle").value.trim(),date:$("xCountdownDate").value,sub:$("xCountdownSub").value.trim()},
+    darshan:{on:$("xDarshanOn").checked,url:$("xDarshanUrl").value.trim(),title:$("xDarshanTitle").value.trim()},
+    notice:{on:$("xNoticeOn").checked,title:$("xNoticeTitle").value.trim(),text:$("xNoticeText").value.trim()},
+    live:{on:$("xLiveOn").checked,text:$("xLiveText").value.trim(),url:$("xLiveUrl").value.trim()},
+    map:{url:$("xMapUrl").value.trim(),address:$("xAddress").value.trim(),parking:$("xParking").value.trim(),entry:$("xEntry").value.trim(),medical:$("xMedical").value.trim(),facilities:$("xFacilities").value.trim()},
+    emergency:{ambulance:$("xAmbulance").value.trim(),police:$("xPolice").value.trim(),fire:$("xFire").value.trim(),lost:$("xLost").value.trim()},
+    seva:{flower:$("xFlower").value.trim(),prasad:$("xPrasad").value.trim(),aarti:$("xAartiSeva").value.trim()},
+    donation:{text:$("xDonationText").value.trim(),upi:$("xUpi").value.trim(),bank:$("xBank").value.trim(),qr:$("xQr").value.trim()},
+    history:$("xHistory").value.trim(),
+    cultural:$("xCultural").value.split("\n").map(x=>x.trim()).filter(Boolean),
+    diya:{on:$("xDiyaOn").checked,limit:Math.max(20,Math.min(5000,Number($("xDiyaLimit").value||500)))}
+  };
+  const {data}=await db.from("site_settings").select("data").eq("id",1).maybeSingle();
+  const base=data?.data||{};
+  base.premium=p;
+  const {error}=await db.from("site_settings").upsert({id:1,data:base});
+  $("premiumStatus").textContent=error ? "❌ "+error.message : "✅ Premium features save हो गए।";
+  if(!error){premiumData=p;applyPremium(p);}
+});
+
+/* Re-read settings and apply premium data without changing the existing settings UI */
+const originalLoadSettings = loadSettings;
+loadSettings = async function(){
+  await originalLoadSettings();
+  const {data}=await db.from("site_settings").select("data").eq("id",1).maybeSingle();
+  const s=data?.data||{};
+  window.__whatsappNumber=s.whatsapp||"";
+  applyPremium(s.premium||{});
+  if(typeof fillPremiumAdmin==="function") fillPremiumAdmin();
+};
+
+function buildTimeline(){
+  const cards=[...document.querySelectorAll("#events .event")];
+  $("timelineGrid").innerHTML=cards.length ? cards.map(c=>`<div class="timeline-item">${c.innerHTML}</div>`).join("") : "<div class='timeline-item'>आज कोई कार्यक्रम नहीं।</div>";
+}
+
+/* simple drag-based panoramic movement for a wide 360 image */
+(function(){
+  let down=false,startX=0,pos=50;
+  const box=$("darshanBox");
+  box.addEventListener("pointerdown",e=>{down=true;startX=e.clientX;box.setPointerCapture(e.pointerId)});
+  box.addEventListener("pointerup",()=>down=false);
+  box.addEventListener("pointermove",e=>{
+    if(!down || !premiumData.darshan.url)return;
+    const dx=e.clientX-startX; startX=e.clientX;
+    pos=Math.max(0,Math.min(100,pos-dx/5));
+    box.style.backgroundPosition=pos+"% center";
+  });
+})();
+
+/* Extend public loading to refresh premium timeline */
+const oldLoadPublic = loadPublic;
+loadPublic = async function(){
+  await oldLoadPublic();
+  buildTimeline();
+  const {data}=await db.from("site_settings").select("data").eq("id",1).maybeSingle();
+  applyPremium(data?.data?.premium||{});
+};
+
+setTimeout(()=>{try{buildTimeline();fillPremiumAdmin()}catch(e){}},1200);
+
+
+/* ===== SUPABASE REALTIME: ADMIN EDITS APPEAR ON EVERY OPEN DEVICE ===== */
+let realtimeStarted=false;
+let refreshTimer=null;
+
+function showSync(){
+  const el=$("syncStatus");
+  if(!el)return;
+  el.style.display="block";
+  clearTimeout(window.__syncHide);
+  window.__syncHide=setTimeout(()=>el.style.display="none",2200);
+}
+
+function schedulePublicRefresh(){
+  clearTimeout(refreshTimer);
+  refreshTimer=setTimeout(async()=>{
+    try{
+      await loadPublic();
+      showSync();
+    }catch(e){console.warn("Realtime refresh failed",e)}
+  },250);
+}
+
+function startRealtime(){
+  if(realtimeStarted || !db.channel)return;
+  realtimeStarted=true;
+
+  const tables=[
+    "site_settings","events","gallery","videos","committee_members",
+    "notices","supporters","messages","diyas"
+  ];
+
+  const ch=db.channel("roh-puja-live-updates");
+  tables.forEach(table=>{
+    ch.on("postgres_changes",{event:"*",schema:"public",table},schedulePublicRefresh);
+  });
+
+  ch.subscribe(status=>{
+    if(status==="SUBSCRIBED") showSync();
+    if(status==="CHANNEL_ERROR" || status==="TIMED_OUT"){
+      console.warn("Supabase realtime status:",status);
+    }
+  });
+
+  window.addEventListener("focus",schedulePublicRefresh);
+  document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="visible") schedulePublicRefresh();
+  });
+}
+
+/* Initial load + realtime */
+setTimeout(startRealtime,800);
+
+
+/* ===== RELIABLE CROSS-DEVICE REFRESH FALLBACK ===== */
+let lastPublicRefresh = 0;
+async function safePublicRefresh(){
+  const now=Date.now();
+  if(now-lastPublicRefresh<5000)return;
+  lastPublicRefresh=now;
+  try{
+    await loadPublic();
+  }catch(e){
+    console.warn("Public refresh:",e);
+  }
+}
+setInterval(()=>{
+  if(document.visibilityState==="visible") safePublicRefresh();
+},20000);
+
+</script>
+</body></html>
